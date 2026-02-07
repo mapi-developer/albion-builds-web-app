@@ -1,0 +1,27 @@
+{
+    "title": "Group",
+    "description": "Useful Group Description",
+    "type": "pvp",
+    "tags": [
+        "big",
+        "pvp"
+    ],
+    "likes": 3,
+    "dislikes": 17,
+    "created_at": null,
+    "roles": {
+        "1": {
+            "main_role_id": 258125,
+            "swap_role_ids": [
+                258999,
+                258888
+            ]
+        },
+        "2": {
+            "main_role_id": 258112,
+            "swap_role_ids": []
+        }
+    },
+    "creator_id": 124124124,
+    "group_id": 151252415
+}

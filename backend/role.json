@@ -1,0 +1,144 @@
+{
+  "role_id": 258125,
+  "title": "RolePreview",
+  "description": "Simple role example description with swaps and mount",
+  "type": "pve",
+  "tags": ["dps", "ranged"],
+  "likes": 23,
+  "dislikes": 1,
+  "created_at": null,
+  "equipment": {
+    "bag": {
+      "main": {
+        "id": 4193,
+        "skill_active_0": null,
+        "skill_active_1": null,
+        "skill_passive_0": null,
+        "skill_passive_1": null
+      },
+      "swaps": []
+    },
+    "cape": {
+      "main": {
+        "id": 4193,
+        "skill_active_0": null,
+        "skill_active_1": null,
+        "skill_passive_0": null,
+        "skill_passive_1": null
+      },
+      "swaps": [
+        {
+          "id": 5001,
+          "skill_active_0": null,
+          "skill_active_1": null,
+          "skill_passive_0": null,
+          "skill_passive_1": null
+        }
+      ]
+    },
+    "head": {
+      "main": {
+        "id": 3001,
+        "skill_active_0": 1,
+        "skill_active_1": 0,
+        "skill_passive_0": 2,
+        "skill_passive_1": null
+      },
+      "swaps": []
+    },
+    "armor": {
+      "main": {
+        "id": 4193,
+        "skill_active_0": 1,
+        "skill_active_1": 1,
+        "skill_passive_0": 2,
+        "skill_passive_1": null
+      },
+      "swaps": [
+        {
+          "id": 4199,
+          "skill_active_0": 2,
+          "skill_active_1": 1,
+          "skill_passive_0": 1,
+          "skill_passive_1": null
+        }
+      ]
+    },
+    "shoes": {
+      "main": {
+        "id": 4193,
+        "skill_active_0": 1,
+        "skill_active_1": 1,
+        "skill_passive_0": 2,
+        "skill_passive_1": null
+      },
+      "swaps": []
+    },
+    "hand_main": {
+      "main": {
+        "id": 4193,
+        "skill_active_0": 1,
+        "skill_active_1": 1,
+        "skill_passive_0": 2,
+        "skill_passive_1": null
+      },
+      "swaps": []
+    },
+    "hand_off": {
+      "main": {
+        "id": 4193,
+        "skill_active_0": 1,
+        "skill_active_1": 1,
+        "skill_passive_0": 2,
+        "skill_passive_1": null
+      },
+      "swaps": [
+        {
+          "id": 6002,
+          "skill_active_0": null,
+          "skill_active_1": null,
+          "skill_passive_0": null,
+          "skill_passive_1": null
+        }
+      ]
+    },
+    "food": {
+      "main": {
+        "id": 7001,
+        "skill_active_0": null,
+        "skill_active_1": null,
+        "skill_passive_0": null,
+        "skill_passive_1": null
+      },
+      "swaps": []
+    },
+    "potion": {
+      "main": {
+        "id": 8001,
+        "skill_active_0": null,
+        "skill_active_1": null,
+        "skill_passive_0": null,
+        "skill_passive_1": null
+      },
+      "swaps": []
+    },
+    "mount": {
+      "main": {
+        "id": 9001,
+        "skill_active_0": null,
+        "skill_active_1": null,
+        "skill_passive_0": null,
+        "skill_passive_1": null
+      },
+      "swaps": [
+        {
+          "id": 9005,
+          "skill_active_0": null,
+          "skill_active_1": null,
+          "skill_passive_0": null,
+          "skill_passive_1": null
+        }
+      ]
+    }
+  }
+}
