@@ -10,44 +10,50 @@ export default function GroupsView() {
     creatorId: '',
     type: '',
     tags: [],
-    minSize: 0
+    minSize: 0,
   });
-  const [sort, setSort] = useState<SortOption>('likes_desc');
+  const [sort, setSort] = useState<SortOption>('date_desc');
 
-  const availableTags = useMemo(() => Array.from(new Set(MOCK_GROUPS.flatMap(g => g.tags))), []);
-  const availableTypes = useMemo(() => Array.from(new Set(MOCK_GROUPS.map(g => g.type))), []);
-
+  // --- Filtering & Sorting Logic ---
   const filteredGroups = useMemo(() => {
     let result = [...MOCK_GROUPS];
 
-    // Filter
+    // 1. Search (Title)
     if (filters.search) {
       const q = filters.search.toLowerCase();
-      result = result.filter(g => g.title.toLowerCase().includes(q) || g.description.toLowerCase().includes(q));
-    }
-    if (filters.creatorId) {
-      result = result.filter(g => g.creator_id.toString() === filters.creatorId);
-    }
-    if (filters.type) {
-      result = result.filter(g => g.type === filters.type);
-    }
-    if (filters.tags.length > 0) {
-      result = result.filter(g => filters.tags.every(tag => g.tags.includes(tag)));
-    }
-    if (filters.minSize && filters.minSize > 0) {
-      result = result.filter(g => Object.keys(g.roles).length >= filters.minSize!);
+      result = result.filter(g => g.title.toLowerCase().includes(q));
     }
 
-    // Sort
+    // 2. Type
+    if (filters.type) {
+      result = result.filter(g => g.type.toLowerCase() === filters.type.toLowerCase());
+    }
+
+    // 3. Creator
+    if (filters.creatorId) {
+      const q = filters.creatorId.toLowerCase();
+      result = result.filter(g => 
+        (g.creator_name && g.creator_name.toLowerCase().includes(q)) || 
+        g.creator_id.toString() === q
+      );
+    }
+
+    // 4. Tags (OR Logic)
+    if (filters.tags.length > 0) {
+      const searchTags = filters.tags.map(t => t.toLowerCase());
+      result = result.filter(g => 
+        g.tags.some(groupTag => searchTags.includes(groupTag.toLowerCase()))
+      );
+    }
+
+    // 5. Sorting
     result.sort((a, b) => {
       switch (sort) {
         case 'likes_desc': return b.likes - a.likes;
         case 'likes_asc': return a.likes - b.likes;
-        case 'date_desc': return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
         case 'date_asc': return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
-        case 'size_desc': return Object.keys(b.roles).length - Object.keys(a.roles).length;
-        case 'size_asc': return Object.keys(a.roles).length - Object.keys(b.roles).length;
-        default: return 0;
+        case 'date_desc': default: 
+          return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
       }
     });
 
@@ -55,29 +61,36 @@ export default function GroupsView() {
   }, [filters, sort]);
 
   return (
-    <div>
-      <FilterBar 
-        filters={filters} 
-        setFilters={setFilters} 
-        sort={sort} 
-        setSort={setSort}
-        availableTags={availableTags}
-        availableTypes={availableTypes}
-        showSizeSort={true}
-        showSizeFilter={true}
-      />
-      
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {filteredGroups.map(group => (
-          <GroupCard key={group.group_id} group={group} />
-        ))}
-      </div>
-      
-       {filteredGroups.length === 0 && (
-        <div className="text-center py-20 text-slate-500">
-          No groups found matching your criteria.
+    <div className="space-y-6">
+      <div className="flex flex-col md:flex-row justify-between items-end gap-4">
+        <div>
+          <h2 className="text-2xl font-bold text-slate-100">Group Compositions</h2>
+          <p className="text-slate-400">Find the perfect team structure for your activity.</p>
         </div>
-      )}
+        <div className="w-full md:w-auto">
+           <button className="w-full md:w-auto bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+            + New Group
+          </button>
+        </div>
+      </div>
+
+      <FilterBar 
+        onFilterChange={setFilters} 
+        onSortChange={setSort} 
+        typeOptions={['zvz', 'ganking', 'small-scale']}
+      />
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        {filteredGroups.length > 0 ? (
+          filteredGroups.map((group) => (
+            <GroupCard key={group.group_id} group={group} />
+          ))
+        ) : (
+          <div className="col-span-full text-center py-12 text-slate-500">
+            No groups found matching your filters.
+          </div>
+        )}
+      </div>
     </div>
   );
 }
