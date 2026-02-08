@@ -1,132 +1,103 @@
 /**
  * Albion Online Data Structure Definitions
- * * This file formalizes the structure for player builds, including equipment,
- * ability choices, and situational item swaps.
+ * Matches the structure of backend/role.json and backend/group.json
  */
 
 // ----------------------------------------------------------------------------
-// Core Scalar Types
+// Enums & Unions
 // ----------------------------------------------------------------------------
 
-export type Tier = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
-export type Enchantment = 0 | 1 | 2 | 3 | 4;
-export type Quality = 1 | 2 | 3 | 4 | 5; // 1=Normal, 2=Good, 3=Outstanding, 4=Excellent, 5=Masterpiece
+export type EquipmentSlotType = 
+  | 'bag' 
+  | 'cape' 
+  | 'head' 
+  | 'armor' 
+  | 'shoes' 
+  | 'hand_main' 
+  | 'hand_off' 
+  | 'food' 
+  | 'potion' 
+  | 'mount';
 
-export type EquipmentSlot =
-  | 'MainHand'
-  | 'OffHand'
-  | 'Head'
-  | 'Armor'
-  | 'Shoes'
-  | 'Cape'
-  | 'Bag'
-  | 'Food'
-  | 'Potion'
-  | 'Mount';
-
-export type Role = 'Tank' | 'Healer' | 'Melee DPS' | 'Ranged DPS' | 'Support' | 'Battlemount';
-export type ContentType = 'ZvZ' | 'Small Scale' | 'Crystal League' | 'HCE' | 'Ganking' | 'Solo' | 'Arena';
+export type SortOption = 
+  | 'likes_desc' 
+  | 'likes_asc' 
+  | 'date_desc' 
+  | 'date_asc' 
+  | 'size_desc' 
+  | 'size_asc';
 
 // ----------------------------------------------------------------------------
-// Item & Ability Definitions
+// Equipment & Items
 // ----------------------------------------------------------------------------
 
-/**
- * Represents a specific spell or passive selected on an item.
- */
-export interface AbilitySelection {
-  slot: 'Q' | 'W' | 'E' | 'Passive';
-  spellId: number; // The internal game ID for the spell
-  spellName?: string;
+export interface EquipmentItem {
+  id: number | null;
+  name?: string; // Optional helper for UI display (mockData uses it)
+  skill_active_0?: number | null;
+  skill_active_1?: number | null;
+  skill_passive_0?: number | null;
+  skill_passive_1?: number | null;
 }
 
-/**
- * Represents a single item instance.
- */
-export interface Item {
-  uniqueName: string; // e.g., "T8_HEAD_CLOTH_SET3"
-  localizedName?: string; // e.g., "Cleric Cowl"
-  tier: Tier;
-  enchantment: Enchantment;
-  quality: Quality;
-  count?: number; // Defaults to 1, useful for Food/Potions
-  abilities?: AbilitySelection[]; // The spells selected for this specific item
+export interface EquipmentSlotConfig {
+  main: EquipmentItem;
+  swaps: EquipmentItem[];
 }
 
+// Maps specific slot names to their configuration
+export type RoleEquipment = Record<EquipmentSlotType, EquipmentSlotConfig>;
+
 // ----------------------------------------------------------------------------
-// Swap Logic
+// Role (Build) Definitions
 // ----------------------------------------------------------------------------
 
-/**
- * Represents a conditional gear swap.
- * Used to define items carried in inventory to adapt to specific matchups.
- */
-export interface ItemSwap {
-  id: string; // Unique identifier for the swap entry
-  targetSlot: EquipmentSlot; // The slot this item is intended to replace
-  item: Item;
-  
-  /**
-   * The condition or context under which this swap should be used.
-   * e.g., "Vs Heavy CC", "For Brawl Phase", "If kiting"
-   */
-  conditionDescription: string;
-  
-  /**
-   * Priority indicates importance of carrying this swap.
-   * 'Mandatory' = Must be in inventory. 'Optional' = Nice to have.
-   */
-  priority: 'Mandatory' | 'Optional';
+export interface Role {
+  role_id: number;
+  title: string;
+  description: string;
+  type: string; // e.g., 'zvz', 'pve', 'ganking'
+  tags: string[];
+  likes: number;
+  dislikes?: number;
+  created_at: string | Date;
+  creator_id: number;
+  creator_name?: string; // UI helper
+  equipment: RoleEquipment;
 }
 
 // ----------------------------------------------------------------------------
-// Build / Loadout Root
+// Group Definitions
 // ----------------------------------------------------------------------------
 
-/**
- * The root data structure for a complete player configuration.
- */
-export interface AlbionBuild {
-  id: string;
-  name: string;
-  author: string;
-  lastUpdated: string; // ISO Date string
-  
-  // Metadata
-  role: Role;
-  contentTypes: ContentType[];
-  description?: string;
-  minIpRequirement?: number;
+export interface GroupRoleSlot {
+  main_role_id: number;
+  swap_role_ids: number[];
+}
 
-  // The Primary Set (what the player wears by default)
-  mainHand: Item;
-  offHand?: Item; // Optional (e.g., if using 2H weapon)
-  head: Item;
-  armor: Item;
-  shoes: Item;
-  cape: Item;
-  
-  // Consumables & Accessories
-  food?: Item;
-  potion?: Item;
-  mount?: Item;
-  bag?: Item;
-
-  // The Swap Collection
-  // A list of alternative items to be carried in inventory
-  inventorySwaps: ItemSwap[];
+export interface Group {
+  group_id: number;
+  title: string;
+  description: string;
+  type: string;
+  tags: string[];
+  likes: number;
+  dislikes?: number;
+  created_at: string | Date;
+  creator_id: number;
+  creator_name?: string; // UI helper
+  // Roles are stored as a map of Slot ID -> Configuration
+  roles: Record<string, GroupRoleSlot>;
 }
 
 // ----------------------------------------------------------------------------
-// Helper Types for UI State
+// UI State Types
 // ----------------------------------------------------------------------------
 
-/**
- * Helper to represent the flat list of items needed to buy the build.
- * Aggregates main set + swaps.
- */
-export interface ShoppingListEntry {
-  uniqueName: string;
-  amount: number;
-  displayName: string;
+export interface FilterState {
+  search: string;
+  creatorId: string;
+  type: string;
+  tags: string[];
+  minSize?: number; // Specific to Groups
 }

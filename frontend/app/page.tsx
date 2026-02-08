@@ -1,14 +1,16 @@
 'use client';
 
 import React, { useState } from 'react';
-// Changed from alias '@/' to relative path '../' to ensure resolution
 import Header, { Tab, UserData } from '../components/Header';
+import GroupsView from '../components/GroupsView';
+import RolesView from '../components/RolesView';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<Tab>('groups');
   const [user, setUser] = useState<UserData | null>(null);
 
   const handleLogin = () => {
+    // Mock login
     setUser({
       username: "AlbionWarlord",
       role: "Veteran"
@@ -32,9 +34,16 @@ export default function App() {
 
       {/* --- MAIN CONTENT --- */}
       <main className="max-w-7xl mx-auto px-4 py-8">
-        <div className="flex items-center justify-center h-64 border border-dashed border-slate-800 rounded-xl bg-slate-900/30 text-slate-500">
-            {activeTab === 'groups' ? 'Groups Content' : 'Builds Content'}
+        
+        {/* Animated Tab Switching */}
+        <div className={activeTab === 'groups' ? 'block' : 'hidden'}>
+          <GroupsView />
         </div>
+        
+        <div className={activeTab === 'builds' ? 'block' : 'hidden'}>
+          <RolesView />
+        </div>
+
       </main>
     </div>
   );
