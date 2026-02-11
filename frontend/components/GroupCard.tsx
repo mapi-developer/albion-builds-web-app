@@ -33,7 +33,7 @@ const GroupCard: React.FC<{ group: Group }> = ({ group }) => {
       </div>
 
       {/* Description */}
-      <p className="text-slate-400 text-sm mb-4 line-clamp-2 flex-grow">
+      <p className="text-slate-400 text-sm mb-4 line-clamp-2 grow">
         {group.description}
       </p>
 

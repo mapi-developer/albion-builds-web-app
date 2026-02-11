@@ -77,7 +77,7 @@ export default function GroupsView() {
       <FilterBar 
         onFilterChange={setFilters} 
         onSortChange={setSort} 
-        typeOptions={['zvz', 'ganking', 'small-scale']}
+        typeOptions={['pvp', 'pve', 'zvz', 'ganking', 'small-scale']}
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

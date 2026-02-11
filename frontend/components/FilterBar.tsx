@@ -10,7 +10,7 @@ interface FilterBarProps {
 export default function FilterBar({ 
   onFilterChange, 
   onSortChange, 
-  typeOptions = ['zvz', 'ganking', 'pve', 'arena'] 
+  typeOptions = ['tank', 'healer', 'support', 'range-dd', 'melee-dd', 'battle-mount'] 
 }: FilterBarProps) {
   const [isExpanded, setIsExpanded] = useState(false);
   
@@ -84,7 +84,7 @@ export default function FilterBar({
         </button>
 
         {/* Search Input */}
-        <div className="flex-grow relative">
+        <div className="grow relative">
           <input
             type="text"
             placeholder="Search by title..."

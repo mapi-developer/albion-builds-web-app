@@ -77,7 +77,7 @@ export default function RolesView() {
       <FilterBar 
         onFilterChange={setFilters} 
         onSortChange={setSort}
-        typeOptions={['zvz', 'pve', 'solo', 'arena']} 
+        typeOptions={['tank', 'healer', 'support', 'range-dd', 'melee-dd', 'battle-mount']} 
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
