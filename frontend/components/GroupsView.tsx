@@ -1,8 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import FilterBar from './FilterBar';
 import GroupCard from './GroupCard';
 import { MOCK_GROUPS } from '../data/mockData';
 import { FilterState, SortOption } from '../types/albion';
+import Pagination from '@atlaskit/pagination';
+
+const ITEMS_PER_PAGE = 20;
 
 export default function GroupsView() {
   const [filters, setFilters] = useState<FilterState>({
@@ -13,23 +16,25 @@ export default function GroupsView() {
     minSize: 0,
   });
   const [sort, setSort] = useState<SortOption>('date_desc');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // --- Filtering & Sorting Logic ---
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, sort]);
+
+  // Filtering & Sorting Logic
   const filteredGroups = useMemo(() => {
     let result = [...MOCK_GROUPS];
 
-    // 1. Search (Title)
     if (filters.search) {
       const q = filters.search.toLowerCase();
       result = result.filter(g => g.title.toLowerCase().includes(q));
     }
 
-    // 2. Type
     if (filters.type) {
       result = result.filter(g => g.type.toLowerCase() === filters.type.toLowerCase());
     }
 
-    // 3. Creator
     if (filters.creatorId) {
       const q = filters.creatorId.toLowerCase();
       result = result.filter(g => 
@@ -38,7 +43,6 @@ export default function GroupsView() {
       );
     }
 
-    // 4. Tags (OR Logic)
     if (filters.tags.length > 0) {
       const searchTags = filters.tags.map(t => t.toLowerCase());
       result = result.filter(g => 
@@ -46,7 +50,6 @@ export default function GroupsView() {
       );
     }
 
-    // 5. Sorting
     result.sort((a, b) => {
       switch (sort) {
         case 'likes_desc': return b.likes - a.likes;
@@ -59,6 +62,15 @@ export default function GroupsView() {
 
     return result;
   }, [filters, sort]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredGroups.length / ITEMS_PER_PAGE);
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  const paginatedGroups = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredGroups.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredGroups, currentPage]);
 
   return (
     <div className="space-y-6">
@@ -81,8 +93,8 @@ export default function GroupsView() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredGroups.length > 0 ? (
-          filteredGroups.map((group) => (
+        {paginatedGroups.length > 0 ? (
+          paginatedGroups.map((group) => (
             <GroupCard key={group.group_id} group={group} />
           ))
         ) : (
@@ -91,6 +103,18 @@ export default function GroupsView() {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8">
+          <Pagination
+            pages={pages}
+            selectedIndex={currentPage - 1}
+            onChange={(event, page) => setCurrentPage(page)}
+            nextLabel="Next"
+            previousLabel="Previous"
+          />
+        </div>
+      )}
     </div>
   );
 }

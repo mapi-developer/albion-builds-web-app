@@ -1,8 +1,11 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import FilterBar from './FilterBar';
 import RoleCard from './RoleCard';
 import { MOCK_ROLES } from '../data/mockData';
 import { FilterState, SortOption } from '../types/albion';
+import Pagination from '@atlaskit/pagination';
+
+const ITEMS_PER_PAGE = 20;
 
 export default function RolesView() {
   const [filters, setFilters] = useState<FilterState>({
@@ -13,23 +16,26 @@ export default function RolesView() {
     minSize: 0,
   });
   const [sort, setSort] = useState<SortOption>('date_desc');
+  const [currentPage, setCurrentPage] = useState(1);
 
-  // --- Filtering & Sorting Logic ---
+  // Reset to page 1 whenever filters or sorting change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters, sort]);
+
+  // Filtering & Sorting Logic
   const filteredRoles = useMemo(() => {
     let result = [...MOCK_ROLES];
 
-    // 1. Search
     if (filters.search) {
       const q = filters.search.toLowerCase();
       result = result.filter(r => r.title.toLowerCase().includes(q));
     }
 
-    // 2. Type
     if (filters.type) {
       result = result.filter(r => r.type.toLowerCase() === filters.type.toLowerCase());
     }
 
-    // 3. Creator
     if (filters.creatorId) {
       const q = filters.creatorId.toLowerCase();
       result = result.filter(r => 
@@ -38,7 +44,6 @@ export default function RolesView() {
       );
     }
 
-    // 4. Tags
     if (filters.tags.length > 0) {
       const searchTags = filters.tags.map(t => t.toLowerCase());
       result = result.filter(r => 
@@ -46,7 +51,6 @@ export default function RolesView() {
       );
     }
 
-    // 5. Sorting
     result.sort((a, b) => {
       switch (sort) {
         case 'likes_desc': return b.likes - a.likes;
@@ -59,6 +63,15 @@ export default function RolesView() {
 
     return result;
   }, [filters, sort]);
+
+  // Pagination Logic
+  const totalPages = Math.ceil(filteredRoles.length / ITEMS_PER_PAGE);
+  const pages = Array.from({ length: totalPages }, (_, i) => i + 1);
+
+  const paginatedRoles = useMemo(() => {
+    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+    return filteredRoles.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  }, [filteredRoles, currentPage]);
 
   return (
     <div className="space-y-6">
@@ -81,8 +94,8 @@ export default function RolesView() {
       />
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        {filteredRoles.length > 0 ? (
-          filteredRoles.map((role) => (
+        {paginatedRoles.length > 0 ? (
+          paginatedRoles.map((role) => (
             <RoleCard key={role.role_id} role={role} />
           ))
         ) : (
@@ -91,6 +104,18 @@ export default function RolesView() {
           </div>
         )}
       </div>
+
+      {totalPages > 1 && (
+        <div className="flex justify-center mt-8">
+          <Pagination
+            pages={pages}
+            selectedIndex={currentPage - 1}
+            onChange={(event, page) => setCurrentPage(page)}
+            nextLabel="Next"
+            previousLabel="Previous"
+          />
+        </div>
+      )}
     </div>
   );
 }
